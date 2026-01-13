@@ -9,6 +9,7 @@ class CEM:
     def __init__(self, policy_cls, pop_size=40, elite_frac=0.2, init_std=1.0):
         dummy = policy_cls()
         self.dim = sum(p.numel() for p in dummy.parameters())
+        print("dimesnion of parameters: ",self.dim)
 
         self.mu = torch.zeros(self.dim)
         self.sigma = torch.ones(self.dim) * init_std
@@ -27,12 +28,28 @@ class CEM:
         elite = thetas[elite_idx]
         self.mu = elite.mean(0)
         self.sigma = elite.std(0) + 1e-8
-        print(self.mu)
-        print(self.sigma)
 
-    def step(self, rollout_fn):
+    # def step(self, rollout_fn):
+    #     thetas = self.sample()
+    #     rewards = [rollout_fn(theta) for theta in thetas]
+        
+    #     self.update(thetas, rewards)
+    #     return np.mean(rewards), np.max(rewards)
+
+    def step(self, rollout_fn, debug=False):
         thetas = self.sample()
-        rewards = [rollout_fn(theta) for theta in thetas]
+        rewards = []
+        stats = []
+
+        for theta in thetas:
+            if debug:
+                info = rollout_fn(theta)
+                stats.append(info)
+            else:
+                info = rollout_fn(theta)
+            rewards.append(info["reward"])
+
         self.update(thetas, rewards)
-        return np.mean(rewards), np.max(rewards)
+        return rewards, stats
+
 

@@ -3,12 +3,15 @@ import mlflow.pytorch
 import torch
 import matplotlib.pyplot as plt
 import os
+import numpy as np
 
 from modules.algorithms.CEM import CEM
 from models.nn import TimePolicy
 from modules.algorithms.seq_montecarlo import build_model, normalize
 from modules.rollout import rollout
 from modules.simulation import FIXED_T2
+
+
 
 # ================= CONFIG =================
 
@@ -44,36 +47,52 @@ with mlflow.start_run():
     cem = CEM(TimePolicy, CEM_POP, CEM_ELITE_FRAC, CEM_INIT_STD)
 
     for gen in range(CEM_GENERATIONS):
-        mean_r, max_r = cem.step(
-            lambda theta: rollout(
-                theta,
-                model,
-                logp_fn,
-                TRUE_OMEGA,
-                N_PARTICLES,
-                EPISODE_LEN,
-                return_particles=False
-            )
+        rewards, stats = cem.step(
+            rollout_fn=lambda theta: rollout(
+                                            theta,
+                                            model,
+                                            logp_fn,
+                                            TRUE_OMEGA,
+                                            N_PARTICLES,
+                                            EPISODE_LEN,
+                                            return_particles=False,#remove
+            ),
+            debug=True
         )
+
+        # ---- stats ----
+        mean_r = np.mean(rewards)
+        max_r = np.max(rewards)
+
+        mean_init_var = np.mean([s["initial_var"] for s in stats])
+        mean_final_var = np.mean([s["final_var"] for s in stats])
+        mean_ess = np.mean([s["final_ess"] for s in stats])
+        mean_t = np.mean([s["mean_t"] for s in stats])
 
         # ---- metrics ----
         mlflow.log_metric("mean_reward", mean_r, step=gen)
         mlflow.log_metric("max_reward", max_r, step=gen)
         mlflow.log_metric("sigma_mean", cem.sigma.mean().item(), step=gen)
         mlflow.log_metric("mu_norm", torch.norm(cem.mu).item(), step=gen)
+        mlflow.log_metric("mean_init_var", mean_init_var, step=gen)
+        mlflow.log_metric("mean_final_var", mean_final_var, step=gen)
+        mlflow.log_metric("mean_ess", mean_ess, step=gen)
+        mlflow.log_metric("mean_t", mean_t, step=gen)
 
         # ---- posterior histogram (best policy) ---- #perhaps should be removed i dont know how it interfers exactly
-        _, particles, logw = rollout(
+        info = rollout(
             cem.mu,
             model,
             logp_fn,
             TRUE_OMEGA,
             N_PARTICLES,
             EPISODE_LEN,
-            return_particles=True,
+            return_particles=True, #remove
+     
         )
-
-
+        ### get metrics fror histograms
+        logw = info["logw"]
+        particles = info["particles"]
         ###
         #PLOTS
         ###
