@@ -12,7 +12,7 @@ from modules.rollout import rollout   # your UPDATED rollout
 # CONFIG
 # ============================================================
 
-RUN_ID = "c29318b0c9a6439ebfd32fb469d5b0f1"
+RUN_ID = "99d5d7f4ca054b76b20ba8dff4fec11e"
 MODEL_NAME = "policy"
 
 TRUE_OMEGA = 0.2
@@ -169,7 +169,7 @@ plt.figure(figsize=(6, 4))
 plt.plot(steps, var_list, marker="o")
 plt.xlabel("Step")
 plt.ylabel("Posterior variance")
-plt.title("Posterior collapse during adaptive experiment")
+plt.title("Posterior collapse during experiment")
 plt.grid(True)
 plt.tight_layout()
 plt.savefig(run_dir / "posterior_variance.png")

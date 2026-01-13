@@ -12,6 +12,8 @@ from modules.algorithms.seq_montecarlo import normalize
 from modules.rollout import rollout
 from modules.simulation import FIXED_T2
 
+from utils.git_utils.git import get_git_branch, get_git_commit, git_is_dirty
+
 
 
 # ================= CONFIG =================
@@ -19,10 +21,10 @@ POLICY = models.nn.TimePolicy_Fiderer #choose network
 
 N_PARTICLES = 3000
 EPISODE_LEN = 100
-CEM_POP = 100
-CEM_ELITE_FRAC = 0.15
+CEM_POP = 500
+CEM_ELITE_FRAC = 0.1
 CEM_INIT_STD = 1.0
-CEM_GENERATIONS = 100
+CEM_GENERATIONS = 1
 HISTORY_SIZE = 30 #size od time array passed to networks (input_dim=HISTORY_SIZE+2)
 RANDOM_SEED=42
 
@@ -31,14 +33,16 @@ TRUE_OMEGAS_LIST = np.random.uniform(0.0, 1.0, size=CEM_GENERATIONS) #generate l
 
 
 # ==========================================
-# print(POLICY.__name__)
-# sys.exit(0)
 
 mlflow.set_experiment("cem_qubit_omega_only")
+mlflow.log_artifacts(".", artifact_path="source_code")
 os.makedirs("artifacts", exist_ok=True) #create folder for artifacts
 
 
 
+if mlflow.active_run() is not None:
+    mlflow.end_run()
+    
 with mlflow.start_run():
 
     mlflow.log_params({
@@ -52,6 +56,14 @@ with mlflow.start_run():
         "HISOTRY_SIZE": HISTORY_SIZE ,
         "policy_name": POLICY.__name__,
         "RANDOM_SEED": RANDOM_SEED,
+
+        # --- git ---
+        "git_commit": get_git_commit(),
+        "git_branch": get_git_branch(),
+        "git_dirty": git_is_dirty(),
+
+
+
     })
 
     cem = CEM(POLICY, CEM_POP, CEM_ELITE_FRAC, CEM_INIT_STD, )
