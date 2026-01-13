@@ -12,10 +12,10 @@ from modules.rollout import rollout   # your UPDATED rollout
 # CONFIG
 # ============================================================
 
-RUN_ID = "ca446d98c593478e8d58c12b8e0d51c3"
+RUN_ID = "c29318b0c9a6439ebfd32fb469d5b0f1"
 MODEL_NAME = "policy"
 
-TRUE_OMEGA = 0.80
+TRUE_OMEGA = 0.2
 N_PARTICLES = 3000
 EPISODE_LEN = 120
 HISTORY_SIZE = 30

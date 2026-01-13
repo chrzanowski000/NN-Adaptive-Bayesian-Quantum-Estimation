@@ -151,3 +151,4 @@ with mlflow.start_run():
         idx += n
 
     mlflow.pytorch.log_model(final_policy, name="policy")
+    print("policy model saved")
