@@ -106,6 +106,22 @@ def smc_step(particles, logw, d, t, model, logp_fn):
 #     return particles, logw
 
 
+# def smc_update_no_resample(particles, logw, d, t, model, logp_fn):
+#     omega = particles[:, 0]
+
+#     p0 = (
+#         np.exp(-t / FIXED_T2)
+#         * np.cos(omega * t / 2)**2
+#         + (1 - np.exp(-t / FIXED_T2)) / 2
+#     )
+
+#     logp = pm.logp(pm.Bernoulli.dist(p=p0), d).eval()
+
+#     logw = logw + logp
+#     logw = logw - logsumexp(logw)
+
+#     return particles, logw
+
 def smc_update_no_resample(particles, logw, d, t, model, logp_fn):
     omega = particles[:, 0]
 
@@ -115,7 +131,14 @@ def smc_update_no_resample(particles, logw, d, t, model, logp_fn):
         + (1 - np.exp(-t / FIXED_T2)) / 2
     )
 
-    logp = pm.logp(pm.Bernoulli.dist(p=p0), d).eval()
+    # Bernoulli log-likelihood per particle
+    logp = np.where(
+        d == 0,
+        np.log(p0 + 1e-12),
+        np.log(1 - p0 + 1e-12),
+    )
+
+    print("logp std =", np.std(logp))
 
     logw = logw + logp
     logw = logw - logsumexp(logw)

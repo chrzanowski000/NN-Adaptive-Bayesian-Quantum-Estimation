@@ -15,8 +15,8 @@ from modules.simulation import FIXED_T2
 
 # ================= CONFIG =================
 
-N_PARTICLES = 3000
-EPISODE_LEN = 100
+N_PARTICLES = 300
+EPISODE_LEN = 10
 TRUE_OMEGA = 0.7
 
 CEM_POP = 100
