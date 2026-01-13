@@ -217,5 +217,5 @@ artifacts/*
 !artifacts/.gitkeep
 
 #Validation
-validation/
+validation/*
 !validation/.gitkeep
