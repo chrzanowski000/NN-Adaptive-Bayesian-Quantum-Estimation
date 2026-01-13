@@ -122,7 +122,7 @@ def smc_step(particles, logw, d, t, model, logp_fn):
 
 #     return particles, logw
 
-def smc_update_no_resample(particles, logw, d, t, model, logp_fn):
+def smc_update_no_resample(particles, logw, d, t):
     omega = particles[:, 0]
 
     p0 = (
@@ -138,7 +138,7 @@ def smc_update_no_resample(particles, logw, d, t, model, logp_fn):
         np.log(1 - p0 + 1e-12),
     )
 
-    print("logp std =", np.std(logp))
+    # print("logp std =", np.std(logp))
 
     logw = logw + logp
     logw = logw - logsumexp(logw)

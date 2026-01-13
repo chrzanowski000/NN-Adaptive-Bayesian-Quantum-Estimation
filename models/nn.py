@@ -46,7 +46,7 @@ class TimePolicy(nn.Module):
         self.history_len = history_len
         input_dim = 2 + history_len   # μ, σ + historia t
         self.t_min = 0.1      # lower informative bound
-        self.t_max = 3000.0     # coherence-scale upper bound
+        self.t_max = 120.0     # coherence-scale upper bound
 
         self.net = nn.Sequential(
             nn.Linear(input_dim, 64),

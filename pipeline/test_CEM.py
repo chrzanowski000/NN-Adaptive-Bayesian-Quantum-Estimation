@@ -15,8 +15,8 @@ from modules.simulation import FIXED_T2
 
 # ================= CONFIG =================
 
-N_PARTICLES = 300
-EPISODE_LEN = 10
+N_PARTICLES = 1000
+EPISODE_LEN = 50
 TRUE_OMEGA = 0.7
 
 CEM_POP = 100
@@ -29,7 +29,7 @@ WINDOW_SIZE = 32 #size od time array passed to networks + mu and sigma so 30+2
 
 mlflow.set_experiment("cem_qubit_omega_only")
 
-model, logp_fn = build_model()
+# model, logp_fn = build_model()
 
 ### temporary curvature check
 # omega = np.linspace(0,1,500)
@@ -58,8 +58,6 @@ with mlflow.start_run():
         rewards, stats = cem.step(
             rollout_fn=lambda theta: rollout(
                                             theta,
-                                            model,
-                                            logp_fn,
                                             TRUE_OMEGA,
                                             N_PARTICLES,
                                             EPISODE_LEN,
@@ -87,17 +85,25 @@ with mlflow.start_run():
         mlflow.log_metric("mean_ess", mean_ess, step=gen)
         mlflow.log_metric("mean_t", mean_t, step=gen)
 
+
+
+        ###----
+        #TEST RUN
+        ###----
+
         # ---- posterior histogram (best policy) ---- #perhaps should be removed i dont know how it interfers exactly
         info = rollout(
             cem.mu,
-            model,
-            logp_fn,
             TRUE_OMEGA,
             N_PARTICLES,
             EPISODE_LEN,
             return_particles=True, #remove
      
         )
+
+
+
+        
         ### get metrics fror histograms
         logw = info["logw"]
         particles = info["particles"]
@@ -135,4 +141,4 @@ with mlflow.start_run():
         p.data.copy_(cem.mu[idx:idx+n].view_as(p))
         idx += n
 
-    mlflow.pytorch.log_model(final_policy, "final_policy")
+    mlflow.pytorch.log_model(final_policy, name="policy")

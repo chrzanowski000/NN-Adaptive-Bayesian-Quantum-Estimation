@@ -11,8 +11,6 @@ from collections import deque
 
 def rollout(
     theta,
-    model,
-    logp_fn,
     TRUE_OMEGA,
     N_PARTICLES,
     EPISODE_LEN,
@@ -53,13 +51,15 @@ def rollout(
         # print(particles, logw, d, t, model, logp_fn)
 
         particles, logw = smc_update_no_resample( #there is a problem SMC is not updating
-            particles, logw, d, t, model, logp_fn
+            particles, logw, d, t
         )
         #print(particles)
         #print(logw)
 
-        if ess(logw) < 0.8 * len(logw):
+        if ess(logw) < 0.75 * len(logw):
+            # print("resampled, ess:", ess(logw))
             particles, logw = resample(particles, logw)
+            
 
     final_var = posterior_variance(particles, logw)
 
