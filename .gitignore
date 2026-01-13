@@ -213,7 +213,9 @@ __marimo__/
 mlflow.db
 mlruns/*
 logs/*
-artifacts/
+artifacts/*
+!artifacts/.gitkeep
 
 #Validation
 validation/
+!validation/.gitkeep
