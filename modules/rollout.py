@@ -4,7 +4,6 @@ import torch
 from modules.simulation import measure
 from modules.algorithms.seq_montecarlo import init_particles, smc_update_no_resample, ess, resample
 from modules.rewards import variance_reduction_reward, posterior_variance
-from models.nn import TimePolicy
 from collections import deque
 
 
