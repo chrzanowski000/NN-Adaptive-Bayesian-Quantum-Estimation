@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 import re
 import json
+from tqdm import tqdm
 
 from modules.rollout import rollout   # your UPDATED rollout
 
@@ -71,9 +72,8 @@ print(f"Saving inference results to: {run_dir}")
 # Run ONE adaptive experiment (MANY rollout)
 # ============================================================
 var_list_N=np.zeros((EPISODE_LEN,1))
-for idx, TRUE_OMEGA in enumerate(TRUE_OMEGAS_LIST):
-    #print(TRUE_OMEGA)
-    print("\nidx: ",idx)
+for TRUE_OMEGA in tqdm(TRUE_OMEGAS_LIST):
+
     info = rollout(
         policy=policy,
         theta=theta,
