@@ -8,13 +8,15 @@ import json
 from tqdm import tqdm
 
 from modules.rollout import rollout   # your UPDATED rollout
+from modules.algorithms.seq_montecarlo import resample_liu_west
 
 # ============================================================
 # CONFIG
 # ============================================================
 
-RUN_ID = "010fe797047f480caaea5550063c635d"
+RUN_ID = "183e23649aae445b9453d434bce20046"
 MODEL_NAME = "policy"
+RESAMPLE_FN=resample_liu_west
 
 TRUE_OMEGA = 0.2
 N_PARTICLES = 3000
@@ -81,6 +83,7 @@ for TRUE_OMEGA in tqdm(TRUE_OMEGAS_LIST):
         N_PARTICLES=N_PARTICLES,
         EPISODE_LEN=EPISODE_LEN,
         HISTORY_SIZE=HISTORY_SIZE,
+        resample_fn=RESAMPLE_FN,
     )
 
 
@@ -112,6 +115,7 @@ episode_summary = {
     # --- identification
     "run_id": RUN_ID,
     "model_name": MODEL_NAME,
+    "resampling_model": RESAMPLE_FN.__name__,
 
     # --- experiment configuration
     "true_omega": TRUE_OMEGA,
@@ -119,11 +123,14 @@ episode_summary = {
     "episode_len": EPISODE_LEN,
     "history_size": HISTORY_SIZE,
 
-    # --- results
+    # --- results #can be wrong for N omegas
     "initial_variance": float(info["initial_var"]),
     "final_variance": float(info["final_var"]),
     "total_reward": float(info["reward"]),
     "final_ess": float(info["final_ess"]),
+
+    "number of omegas": N_OMEGAS,
+    "final variance over N omegas": float(var_list_N_mean[-1]),
 
     # --- prediction
     "final_posterior_mean": float(mean_list[-1]),
@@ -171,9 +178,10 @@ plt.tight_layout()
 plt.savefig(run_dir / "predicted_t.png")
 plt.close()
 
-# ---- Posterior variance
+# ---- Posterior variance over N omegas
 plt.figure(figsize=(6, 4))
 plt.plot(steps, var_list_N_mean, marker="o")
+plt.yscale('log')
 plt.xlabel("Step")
 plt.ylabel(f"Posterior variance over {N_OMEGAS} omegas")
 plt.title("Posterior collapse during experiment")

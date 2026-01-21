@@ -8,7 +8,7 @@ import sys
 
 from modules.algorithms.CEM import CEM
 import models.nn
-from modules.algorithms.seq_montecarlo import normalize
+from modules.algorithms.seq_montecarlo import normalize, resample_liu_west, resample
 from modules.rollout import rollout
 from modules.simulation import FIXED_T2
 
@@ -18,15 +18,17 @@ from utils.git_utils.git import get_git_branch, get_git_commit, git_is_dirty
 
 # ================= CONFIG =================
 POLICY = models.nn.TimePolicy_Fiderer #choose network
+RESAMPLE_FN = resample_liu_west
+#RESAMPLE_FN = resample
 #POLICY = models.nn.TimePolicy_1
 
 N_PARTICLES = 2000
 EPISODE_LEN = 100
-CEM_POP = 100
+CEM_POP = 1000
 CEM_ELITE_FRAC = 0.1
 CEM_INIT_STD = 1.0
-CEM_GENERATIONS = 2
-HISTORY_SIZE = 50 #size od time array passed to networks (input_dim=HISTORY_SIZE+2)
+CEM_GENERATIONS = 100
+HISTORY_SIZE = 30 #size od time array passed to networks (input_dim=HISTORY_SIZE+2)
 RANDOM_SEED=42
 
 np.random.seed(RANDOM_SEED) #seed for omegas generation
@@ -56,6 +58,7 @@ with mlflow.start_run():
         "CEM_INIT_STD": CEM_INIT_STD,
         "HISOTRY_SIZE": HISTORY_SIZE ,
         "policy_name": POLICY.__name__,
+        "resample_function": RESAMPLE_FN.__name__,
         "RANDOM_SEED": RANDOM_SEED,
 
         # --- git ---
