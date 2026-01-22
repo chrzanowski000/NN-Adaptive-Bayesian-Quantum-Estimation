@@ -77,6 +77,21 @@ class TimePolicy_Fiderer(nn.Module): #orginal network from fiderer
             nn.Linear(hidden_dim, 1),
         )
 
+class TimePolicy_Fiderer_16(nn.Module): #orginal network from fiderer
+    def __init__(self, history_len=5):
+        super().__init__()
+        self.history_len = history_len
+        input_dim = 2 + history_len   # μ, σ + historia t
+        self.t_min = 0.1      # lower informative bound
+        self.t_max = 3000.0     # coherence-scale upper bound
+        hidden_dim = 16
+
+        self.net = nn.Sequential(
+            nn.Linear(input_dim, hidden_dim),
+            nn.Tanh(),
+            nn.Linear(hidden_dim, 1),
+        )
+
     def forward(self, x):
         z = self.net(x)
         t = self.t_min + (self.t_max - self.t_min) * torch.sigmoid(z)

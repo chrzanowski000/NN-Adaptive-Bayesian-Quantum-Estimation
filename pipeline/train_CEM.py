@@ -18,12 +18,12 @@ from utils.git_utils.git import get_git_branch, get_git_commit, git_is_dirty
 
 
 # ================= CONFIG =================
-POLICY = models.nn.TimePolicy_Fiderer #choose network
+POLICY = models.nn.TimePolicy_Fiderer_16 #choose network
 #RESAMPLE_FN = resample_liu_west
 RESAMPLE_FN = resample
 #POLICY = models.nn.TimePolicy_1
 
-N_PARTICLES = 2000
+N_PARTICLES = 10000
 EPISODE_LEN = 100
 CEM_POP = 1000
 CEM_ELITE_FRAC = 0.1

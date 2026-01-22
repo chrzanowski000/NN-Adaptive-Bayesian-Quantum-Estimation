@@ -14,7 +14,7 @@ from modules.algorithms.seq_montecarlo import resample_liu_west, resample
 # CONFIG
 # ============================================================
 
-RUN_ID = "183e23649aae445b9453d434bce20046"
+RUN_ID = "ddc76c3b2cce47bca4b12af5cc715cf8"
 MODEL_NAME = "policy"
 RESAMPLE_FN=resample
 
@@ -182,6 +182,7 @@ plt.close()
 plt.figure(figsize=(6, 4))
 plt.plot(steps, var_list_N_mean, marker="o")
 plt.yscale('log')
+plt.ylim(1e-3, 1e-1)
 plt.xlabel("Step")
 plt.ylabel(f"Posterior variance over {N_OMEGAS} omegas")
 plt.title("Posterior collapse during experiment")
